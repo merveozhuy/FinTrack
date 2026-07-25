@@ -1,15 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <!-- Target framework is net8.0 (from Directory.Build.props).
          RollForward=Major lets the app run on a newer installed runtime (e.g. .NET 9)
          when the .NET 8 runtime is not installed on the dev machine. -->
     <RollForward>Major</RollForward>
+    <UserSecretsId>9261b633-bdbd-4b44-9fa3-8271bfd388e2</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Serilog.AspNetCore" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <!-- Required on the startup project for the EF Core CLI tools (migrations / database update). -->
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
