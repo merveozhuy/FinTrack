@@ -1,0 +1,42 @@
+# ---------- .NET ----------
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.suo
+*.userprefs
+project.lock.json
+artifacts/
+.vs/
+*.DotSettings.user
+
+# EF Core
+# (migrations are committed; nothing to ignore by default)
+
+# ---------- Node / Frontend ----------
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/
+coverage/
+
+# ---------- Environment / Secrets ----------
+.env
+.env.*
+!.env.example
+*.pfx
+appsettings.*.local.json
+
+# ---------- IDE / Tooling ----------
+.idea/
+*.swp
+.DS_Store
+
+# Claude Code workspace settings (do not publish)
+.claude/
+
+# ---------- Logs ----------
+logs/
+*.log
