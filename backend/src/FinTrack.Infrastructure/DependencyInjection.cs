@@ -1,5 +1,6 @@
 using FinTrack.Application.Common.Interfaces;
 using FinTrack.Infrastructure.Persistence;
+using FinTrack.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +19,9 @@ public static class DependencyInjection
 
         // Expose the same scoped AppDbContext instance through the Application-layer abstraction.
         services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<AppDbContext>());
+
+        services.AddSingleton<IPasswordHasher, IdentityPasswordHasher>();
+        services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
         return services;
     }
