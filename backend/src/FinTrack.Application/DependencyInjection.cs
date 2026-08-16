@@ -1,3 +1,4 @@
+using System.Globalization;
 using FinTrack.Application.Features.Auth;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +9,10 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
+        // Force English validation messages regardless of the host OS culture, so API
+        // responses are consistent (the default would follow the machine locale, e.g. tr-TR).
+        ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo("en-US");
+
         // Registers all AbstractValidator<T> implementations in this assembly.
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
