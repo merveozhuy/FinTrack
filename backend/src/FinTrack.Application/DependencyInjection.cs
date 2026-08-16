@@ -1,5 +1,6 @@
 using System.Globalization;
 using FinTrack.Application.Features.Auth;
+using FinTrack.Application.Features.Categories;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,6 +18,7 @@ public static class DependencyInjection
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<ICategoryService, CategoryService>();
 
         return services;
     }
