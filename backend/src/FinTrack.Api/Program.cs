@@ -58,13 +58,16 @@ builder.Services
 builder.Services.AddAuthorization();
 
 // Rate limiting: protect auth endpoints from brute-force / abuse.
+// Limits are configurable so integration tests can raise them (config key "RateLimiting:Auth").
+var authPermitLimit = builder.Configuration.GetValue<int?>("RateLimiting:Auth:PermitLimit") ?? 10;
+var authWindowSeconds = builder.Configuration.GetValue<int?>("RateLimiting:Auth:WindowSeconds") ?? 60;
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
     options.AddFixedWindowLimiter(RateLimitingPolicies.Auth, limiter =>
     {
-        limiter.PermitLimit = 10;
-        limiter.Window = TimeSpan.FromMinutes(1);
+        limiter.PermitLimit = authPermitLimit;
+        limiter.Window = TimeSpan.FromSeconds(authWindowSeconds);
         limiter.QueueLimit = 0;
     });
 });
