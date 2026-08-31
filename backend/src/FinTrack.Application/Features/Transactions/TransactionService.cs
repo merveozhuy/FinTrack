@@ -71,6 +71,7 @@ public class TransactionService : ITransactionService
 
         var userId = _currentUser.RequireUserId();
         var category = await GetOwnedCategoryAsync(userId, request.CategoryId, request.Type, cancellationToken);
+        var card = await GetOwnedCardAsync(userId, request.CreditCardId, request.Type, cancellationToken);
 
         var transaction = new Transaction
         {
@@ -80,13 +81,14 @@ public class TransactionService : ITransactionService
             Currency = request.Currency.Trim().ToUpperInvariant(),
             Description = request.Description?.Trim(),
             CategoryId = category.Id,
+            CreditCardId = card?.Id,
             TransactionDate = request.TransactionDate
         };
 
         _db.Transactions.Add(transaction);
         await _db.SaveChangesAsync(cancellationToken);
 
-        return ToDto(transaction, category.Name);
+        return ToDto(transaction, category.Name, card?.Name);
     }
 
     public async Task<TransactionDto> UpdateAsync(Guid id, UpdateTransactionRequest request, CancellationToken cancellationToken)
@@ -100,17 +102,19 @@ public class TransactionService : ITransactionService
             ?? throw new NotFoundException(nameof(Transaction), id);
 
         var category = await GetOwnedCategoryAsync(userId, request.CategoryId, request.Type, cancellationToken);
+        var card = await GetOwnedCardAsync(userId, request.CreditCardId, request.Type, cancellationToken);
 
         transaction.Type = request.Type;
         transaction.Amount = request.Amount;
         transaction.Currency = request.Currency.Trim().ToUpperInvariant();
         transaction.Description = request.Description?.Trim();
         transaction.CategoryId = category.Id;
+        transaction.CreditCardId = card?.Id;
         transaction.TransactionDate = request.TransactionDate;
 
         await _db.SaveChangesAsync(cancellationToken);
 
-        return ToDto(transaction, category.Name);
+        return ToDto(transaction, category.Name, card?.Name);
     }
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
@@ -205,13 +209,32 @@ public class TransactionService : ITransactionService
         return category;
     }
 
-    // Projection used inside DB queries; EF translates the category navigation to a join.
+    private async Task<CreditCard?> GetOwnedCardAsync(
+        Guid userId, Guid? cardId, TransactionType type, CancellationToken cancellationToken)
+    {
+        // Cards apply to expenses only; income is never linked to a card.
+        if (cardId is not { } id || type != TransactionType.Expense)
+        {
+            return null;
+        }
+
+        return await _db.CreditCards.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId, cancellationToken)
+            ?? throw new ValidationException(new Dictionary<string, string[]>
+            {
+                ["creditCardId"] = new[] { "Credit card not found or not accessible." }
+            });
+    }
+
+    // Projection used inside DB queries; EF translates the navigations to joins.
     private static readonly Expression<Func<Transaction, TransactionDto>> Projection = t => new TransactionDto(
         t.Id, t.Type, t.Amount, t.Currency, t.Description,
-        t.CategoryId, t.Category!.Name, t.TransactionDate, t.CreatedAt, t.UpdatedAt);
+        t.CategoryId, t.Category!.Name,
+        t.CreditCardId, t.CreditCard != null ? t.CreditCard.Name : null,
+        t.TransactionDate, t.CreatedAt, t.UpdatedAt);
 
-    // In-memory form (used after create/update) with a known category name.
-    private static TransactionDto ToDto(Transaction t, string categoryName) => new(
+    // In-memory form (used after create/update) with a known category and card name.
+    private static TransactionDto ToDto(Transaction t, string categoryName, string? cardName) => new(
         t.Id, t.Type, t.Amount, t.Currency, t.Description,
-        t.CategoryId, categoryName, t.TransactionDate, t.CreatedAt, t.UpdatedAt);
+        t.CategoryId, categoryName, t.CreditCardId, cardName,
+        t.TransactionDate, t.CreatedAt, t.UpdatedAt);
 }

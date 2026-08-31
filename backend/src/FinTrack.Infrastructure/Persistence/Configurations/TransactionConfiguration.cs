@@ -30,5 +30,13 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
             .WithMany(c => c.Transactions)
             .HasForeignKey(x => x.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // Optional credit card. Deleting a card unlinks its transactions rather than removing them.
+        builder.HasOne(x => x.CreditCard)
+            .WithMany(c => c.Transactions)
+            .HasForeignKey(x => x.CreditCardId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasIndex(x => x.CreditCardId);
     }
 }

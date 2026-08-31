@@ -21,6 +21,10 @@ public class Transaction : AuditableEntity
     public Guid CategoryId { get; set; }
     public Category? Category { get; set; }
 
+    /// <summary>Optional credit card an expense was paid with. Null for cash/bank transactions and income.</summary>
+    public Guid? CreditCardId { get; set; }
+    public CreditCard? CreditCard { get; set; }
+
     /// <summary>Calendar day the transaction occurred (no time component).</summary>
     public DateOnly TransactionDate { get; set; }
 }

@@ -10,6 +10,8 @@ public record TransactionDto(
     string? Description,
     Guid CategoryId,
     string CategoryName,
+    Guid? CreditCardId,
+    string? CreditCardName,
     DateOnly TransactionDate,
     DateTime CreatedAt,
     DateTime UpdatedAt);

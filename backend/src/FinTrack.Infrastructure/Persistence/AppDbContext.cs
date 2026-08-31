@@ -21,6 +21,8 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<EmbeddingDocument> EmbeddingDocuments => Set<EmbeddingDocument>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<CreditCard> CreditCards => Set<CreditCard>();
+    public DbSet<CreditCardPayment> CreditCardPayments => Set<CreditCardPayment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

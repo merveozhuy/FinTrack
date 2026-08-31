@@ -5,6 +5,7 @@ using FinTrack.Application.Features.Assistant.Documents;
 using FinTrack.Application.Features.Auth;
 using FinTrack.Application.Features.Budgets;
 using FinTrack.Application.Features.Categories;
+using FinTrack.Application.Features.CreditCards;
 using FinTrack.Application.Features.Dashboard;
 using FinTrack.Application.Features.RecurringTransactions;
 using FinTrack.Application.Features.RecurringTransactions.Processing;
@@ -28,6 +29,7 @@ public static class DependencyInjection
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<ITransactionService, TransactionService>();
+        services.AddScoped<ICreditCardService, CreditCardService>();
         services.AddScoped<IBudgetService, BudgetService>();
         services.AddScoped<IDashboardService, DashboardService>();
         services.AddScoped<IRecurringTransactionService, RecurringTransactionService>();

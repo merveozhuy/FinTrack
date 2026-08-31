@@ -20,6 +20,8 @@ public interface IAppDbContext
     DbSet<EmbeddingDocument> EmbeddingDocuments { get; }
     DbSet<RefreshToken> RefreshTokens { get; }
     DbSet<AuditLog> AuditLogs { get; }
+    DbSet<CreditCard> CreditCards { get; }
+    DbSet<CreditCardPayment> CreditCardPayments { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
