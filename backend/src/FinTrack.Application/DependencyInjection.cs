@@ -1,6 +1,8 @@
 using System.Globalization;
 using FinTrack.Application.Features.Auth;
+using FinTrack.Application.Features.Budgets;
 using FinTrack.Application.Features.Categories;
+using FinTrack.Application.Features.Dashboard;
 using FinTrack.Application.Features.Transactions;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +23,8 @@ public static class DependencyInjection
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<ITransactionService, TransactionService>();
+        services.AddScoped<IBudgetService, BudgetService>();
+        services.AddScoped<IDashboardService, DashboardService>();
 
         return services;
     }
