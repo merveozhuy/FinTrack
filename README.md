@@ -28,13 +28,18 @@ model is used only to **explain, summarize and interpret** that trusted data —
   (archive) so historical data stays intact, uniqueness enforcement.
 - **Transactions** — full CRUD with filtering (date range, category, type, amount range,
   description search), sorting, pagination, and category/type consistency validation.
+- **Budgets** — monthly per-category budgets with computed spending, remaining, usage percentage,
+  an 80% warning threshold and overrun detection. The math lives in a pure, unit-tested domain
+  calculator — never in the (future) LLM.
+- **Dashboard** — a single aggregate endpoint returning monthly income/expense/net, month-over-month
+  change, category breakdown, daily spending trend, recent transactions, budget status and
+  upcoming payments.
 - **Reliable error handling** — RFC 7807 ProblemDetails for every error, with a trace id.
-- **Tested** — unit tests plus integration tests that run against a real PostgreSQL (via
+- **Tested** — 38 tests: unit tests plus integration tests that run against a real PostgreSQL (via
   Testcontainers), including cross-user data-isolation proofs.
 
-Planned: monthly budgets with usage/overrun calculations, an aggregate dashboard endpoint,
-reports with CSV export, recurring transactions with a background worker, a React frontend, and
-the RAG assistant.
+Planned: reports with CSV export, recurring transactions with a background worker, a React
+frontend, and the RAG assistant.
 
 ## 🏗️ Architecture
 
@@ -110,7 +115,7 @@ Recharts, Tailwind CSS.
 | 2 | Backend skeleton, entities, DbContext, migrations, error handling | ✅ |
 | 3 | Authentication (JWT + refresh, ownership) | ✅ |
 | 4 | Categories + Transactions (filtering, pagination, tests) | ✅ |
-| 5 | Budgets + Dashboard aggregate endpoint | ⏳ |
+| 5 | Budgets + Dashboard aggregate endpoint | ✅ |
 | 6 | Recurring transactions + background worker | ⏳ |
 | 7 | React frontend | ⏳ |
 | 8 | RAG assistant (pgvector, embeddings, LLM) | ⏳ |
@@ -183,8 +188,10 @@ dotnet test
 | Auth | `POST /api/auth/register` · `POST /api/auth/login` · `POST /api/auth/refresh` · `GET /api/auth/me` |
 | Categories | `GET/POST /api/categories` · `PUT/DELETE /api/categories/{id}` |
 | Transactions | `GET/POST /api/transactions` · `GET/PUT/DELETE /api/transactions/{id}` |
+| Budgets | `GET /api/budgets/{year}/{month}` · `POST /api/budgets` · `PUT/DELETE /api/budgets/{id}` |
+| Dashboard | `GET /api/dashboard?year=&month=` |
 | Health | `GET /api/health` |
-| _Planned_ | budgets, dashboard, reports, recurring transactions, assistant |
+| _Planned_ | reports, recurring transactions, assistant |
 
 A ready-to-use request collection is in [`docs/requests.http`](docs/requests.http).
 
