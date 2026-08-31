@@ -5,6 +5,7 @@ import {
 } from '../api/transactions'
 import type { TransactionFilters } from '../api/transactions'
 import { useCategories } from '../api/categories'
+import { useCreditCards } from '../api/creditCards'
 import { Badge, EmptyState, ErrorState, Field, Modal, PageHeader, Spinner } from '../components/ui'
 import { useToast } from '../context/ToastContext'
 import { api, getApiErrorMessage } from '../lib/api'
@@ -21,11 +22,12 @@ interface FormState {
   type: TransactionType
   amount: string
   categoryId: string
+  creditCardId: string
   transactionDate: string
   description: string
 }
 
-const emptyForm: FormState = { type: 'Expense', amount: '', categoryId: '', transactionDate: today, description: '' }
+const emptyForm: FormState = { type: 'Expense', amount: '', categoryId: '', creditCardId: '', transactionDate: today, description: '' }
 
 function iso(date: Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
@@ -51,6 +53,7 @@ export function TransactionsPage() {
   const [page, setPage] = useState(1)
   const { data, isLoading, isError } = useTransactions({ ...filters, page, pageSize: PAGE_SIZE })
   const { data: categories } = useCategories()
+  const { data: cards } = useCreditCards()
   const createTransaction = useCreateTransaction()
   const updateTransaction = useUpdateTransaction()
   const deleteTransaction = useDeleteTransaction()
@@ -100,7 +103,7 @@ export function TransactionsPage() {
   function openEdit(t: Transaction) {
     setForm({
       id: t.id, type: t.type, amount: String(t.amount), categoryId: t.categoryId,
-      transactionDate: t.transactionDate, description: t.description ?? '',
+      creditCardId: t.creditCardId ?? '', transactionDate: t.transactionDate, description: t.description ?? '',
     })
     setOpen(true)
   }
@@ -112,6 +115,7 @@ export function TransactionsPage() {
       amount: Number(form.amount),
       currency: 'TRY',
       categoryId: form.categoryId,
+      creditCardId: form.type === 'Expense' && form.creditCardId ? form.creditCardId : undefined,
       description: form.description || undefined,
       transactionDate: form.transactionDate,
     }
@@ -211,6 +215,7 @@ export function TransactionsPage() {
                     <td className="px-4 py-3">
                       <span className="font-medium text-slate-800">{t.categoryName}</span>{' '}
                       <Badge tone={t.type === 'Income' ? 'emerald' : 'slate'}>{typeLabel(t.type)}</Badge>
+                      {t.creditCardName && <span className="ml-1 text-xs text-slate-400">💳 {t.creditCardName}</span>}
                     </td>
                     <td className="px-4 py-3 text-slate-500">{t.description ?? '—'}</td>
                     <td className={`px-4 py-3 text-right font-semibold ${t.type === 'Income' ? 'text-emerald-600' : 'text-slate-800'}`}>
@@ -257,6 +262,14 @@ export function TransactionsPage() {
                 {formCategories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
             </Field>
+            {form.type === 'Expense' && (cards?.length ?? 0) > 0 && (
+              <Field label="Kart (opsiyonel)">
+                <select className="input" value={form.creditCardId} onChange={(e) => setForm((f) => ({ ...f, creditCardId: e.target.value }))}>
+                  <option value="">Nakit / Banka</option>
+                  {cards?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+              </Field>
+            )}
             <Field label="Tarih">
               <input className="input" type="date" value={form.transactionDate} onChange={(e) => setForm((f) => ({ ...f, transactionDate: e.target.value }))} required />
             </Field>

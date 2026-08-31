@@ -6,6 +6,7 @@ const navItems = [
   { to: '/transactions', label: 'İşlemler', icon: 'M4 6h16M4 12h16M4 18h10' },
   { to: '/categories', label: 'Kategoriler', icon: 'M9 5H5a2 2 0 00-2 2v4l9 9 6-6-9-9zM8 8h.01' },
   { to: '/budgets', label: 'Bütçeler', icon: 'M12 3v9l6 4M12 21a9 9 0 110-18' },
+  { to: '/credit-cards', label: 'Kredi Kartları', icon: 'M3 7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2zM3 10h18M7 15h4' },
   { to: '/recurring', label: 'Yinelenen', icon: 'M4 9a8 8 0 0113-4l3 3M20 15a8 8 0 01-13 4l-3-3M17 4v4h-4M7 20v-4h4' },
   { to: '/assistant', label: 'AI Asistan', icon: 'M8 10h8M8 14h5M21 12a8 8 0 01-8 8H7l-4 3V12a8 8 0 018-8h2a8 8 0 018 8z' },
   { to: '/profile', label: 'Profil', icon: 'M20 21a8 8 0 10-16 0M12 11a4 4 0 100-8 4 4 0 000 8z' },

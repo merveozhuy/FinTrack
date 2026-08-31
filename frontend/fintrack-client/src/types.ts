@@ -32,9 +32,21 @@ export interface Transaction {
   description?: string | null
   categoryId: string
   categoryName: string
+  creditCardId?: string | null
+  creditCardName?: string | null
   transactionDate: string
   createdAt: string
   updatedAt: string
+}
+
+export interface CreditCard {
+  id: string
+  name: string
+  last4?: string | null
+  creditLimit?: number | null
+  currentDebt: number
+  availableLimit?: number | null
+  usagePercentage?: number | null
 }
 
 export interface Paged<T> {
