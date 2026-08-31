@@ -33,6 +33,10 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
         // Effectively disable auth rate limiting during tests (many registrations per run).
         builder.UseSetting("RateLimiting:Auth:PermitLimit", "1000000");
+
+        // Disable the recurring-transaction background worker so tests can drive the processor
+        // deterministically instead of racing a timer.
+        builder.UseSetting("RecurringTransactions:Enabled", "false");
     }
 
     public async Task InitializeAsync()
