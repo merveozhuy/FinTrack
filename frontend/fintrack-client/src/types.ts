@@ -127,3 +127,41 @@ export interface Dashboard {
   budgets: BudgetStatusItem[]
   upcomingPayments: UpcomingPayment[]
 }
+
+export type MessageRole = 'User' | 'Assistant'
+
+export interface SourceRef {
+  type: string
+  category?: string | null
+}
+
+export interface DataPeriod {
+  start: string
+  end: string
+}
+
+export interface ChatResponse {
+  answer: string
+  conversationId: string
+  dataPeriod: DataPeriod
+  sources: SourceRef[]
+}
+
+export interface ConversationSummary {
+  id: string
+  title: string
+  createdAt: string
+}
+
+export interface ChatMessage {
+  role: MessageRole
+  content: string
+  createdAt: string
+}
+
+export interface ConversationDetail {
+  id: string
+  title: string
+  createdAt: string
+  messages: ChatMessage[]
+}

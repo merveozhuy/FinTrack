@@ -7,6 +7,7 @@ const navItems = [
   { to: '/categories', label: 'Categories' },
   { to: '/budgets', label: 'Budgets' },
   { to: '/recurring', label: 'Recurring' },
+  { to: '/assistant', label: 'AI Assistant' },
 ]
 
 export function Layout() {

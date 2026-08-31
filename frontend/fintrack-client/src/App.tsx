@@ -8,6 +8,7 @@ import { TransactionsPage } from './pages/TransactionsPage'
 import { CategoriesPage } from './pages/CategoriesPage'
 import { BudgetsPage } from './pages/BudgetsPage'
 import { RecurringPage } from './pages/RecurringPage'
+import { AssistantPage } from './pages/AssistantPage'
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
           <Route path="/categories" element={<CategoriesPage />} />
           <Route path="/budgets" element={<BudgetsPage />} />
           <Route path="/recurring" element={<RecurringPage />} />
+          <Route path="/assistant" element={<AssistantPage />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
