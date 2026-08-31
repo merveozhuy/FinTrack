@@ -3,6 +3,8 @@ using FinTrack.Application.Features.Auth;
 using FinTrack.Application.Features.Budgets;
 using FinTrack.Application.Features.Categories;
 using FinTrack.Application.Features.Dashboard;
+using FinTrack.Application.Features.RecurringTransactions;
+using FinTrack.Application.Features.RecurringTransactions.Processing;
 using FinTrack.Application.Features.Transactions;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +27,8 @@ public static class DependencyInjection
         services.AddScoped<ITransactionService, TransactionService>();
         services.AddScoped<IBudgetService, BudgetService>();
         services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<IRecurringTransactionService, RecurringTransactionService>();
+        services.AddScoped<IRecurringTransactionProcessor, RecurringTransactionProcessor>();
 
         return services;
     }

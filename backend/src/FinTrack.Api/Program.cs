@@ -1,6 +1,7 @@
 using System.Text;
 using System.Threading.RateLimiting;
 using FinTrack.Api;
+using FinTrack.Api.BackgroundServices;
 using FinTrack.Api.Middleware;
 using FinTrack.Api.Services;
 using FinTrack.Application;
@@ -35,6 +36,9 @@ if (string.IsNullOrWhiteSpace(jwtSettings.Secret))
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+
+// Background worker that materializes due recurring transactions.
+builder.Services.AddHostedService<RecurringTransactionWorker>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUser, CurrentUserService>();
