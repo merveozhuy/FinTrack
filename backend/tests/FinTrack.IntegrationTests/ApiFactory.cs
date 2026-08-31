@@ -31,8 +31,9 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         builder.UseSetting("Jwt:AccessTokenMinutes", "15");
         builder.UseSetting("Jwt:RefreshTokenDays", "7");
 
-        // Effectively disable auth rate limiting during tests (many registrations per run).
+        // Effectively disable rate limiting during tests (many requests per run).
         builder.UseSetting("RateLimiting:Auth:PermitLimit", "1000000");
+        builder.UseSetting("RateLimiting:Assistant:PermitLimit", "1000000");
 
         // Disable the recurring-transaction background worker so tests can drive the processor
         // deterministically instead of racing a timer.
