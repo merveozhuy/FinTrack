@@ -6,10 +6,10 @@ import { useToast } from '../context/ToastContext'
 import { getApiErrorMessage } from '../lib/api'
 
 const suggestions = [
-  'How much did I spend this month?',
-  'Which categories am I over budget on?',
-  'Summarize my finances and where I should be careful',
-  'What are my upcoming payments?',
+  'Bu ay ne kadar harcadım?',
+  'Hangi kategorilerde bütçemi aştım?',
+  'Finansal durumumu özetle ve nelere dikkat etmeliyim?',
+  'Yaklaşan ödemelerim neler?',
 ]
 
 export function AssistantPage() {
@@ -38,7 +38,7 @@ export function AssistantPage() {
   }
 
   async function remove(id: string) {
-    if (!window.confirm('Delete this conversation?')) return
+    if (!window.confirm('Bu sohbet silinsin mi?')) return
     try {
       await deleteConversation.mutateAsync(id)
       if (selectedId === id) setSelectedId(null)
@@ -51,15 +51,12 @@ export function AssistantPage() {
 
   return (
     <div>
-      <PageHeader title="AI Assistant" subtitle="Ask about your own finances — answers are grounded in your data" />
+      <PageHeader title="AI Asistan" subtitle="Finanslarınız hakkında doğal dilde sorun — cevaplar yalnızca sizin verinize dayanır" />
 
       <div className="grid gap-4 lg:grid-cols-[240px_1fr]">
         <aside className="card h-fit">
-          <button
-            className="btn-primary mb-3 w-full"
-            onClick={() => { setSelectedId(null); setInput('') }}
-          >
-            New chat
+          <button className="btn-primary mb-3 w-full" onClick={() => { setSelectedId(null); setInput('') }}>
+            Yeni sohbet
           </button>
           <ul className="space-y-1">
             {conversations?.map((c) => (
@@ -73,16 +70,10 @@ export function AssistantPage() {
                 >
                   {c.title}
                 </button>
-                <button
-                  onClick={() => remove(c.id)}
-                  className="text-slate-300 hover:text-rose-600"
-                  aria-label="Delete conversation"
-                >
-                  ✕
-                </button>
+                <button onClick={() => remove(c.id)} className="text-slate-300 hover:text-rose-600" aria-label="Sohbeti sil">✕</button>
               </li>
             ))}
-            {conversations?.length === 0 && <li className="px-2 py-1 text-xs text-slate-400">No conversations yet</li>}
+            {conversations?.length === 0 && <li className="px-2 py-1 text-xs text-slate-400">Henüz sohbet yok</li>}
           </ul>
         </aside>
 
@@ -90,23 +81,21 @@ export function AssistantPage() {
           <div className="flex-1 space-y-4 overflow-y-auto pr-1">
             {selectedId === null && messages.length === 0 && (
               <div className="space-y-4">
-                <EmptyState title="Ask me anything about your finances" hint="I only use your own data to answer." />
+                <EmptyState title="Finanslarınız hakkında her şeyi sorun" hint="Cevaplamak için yalnızca sizin verilerinizi kullanırım." />
                 <div className="flex flex-wrap gap-2">
                   {suggestions.map((s) => (
-                    <button key={s} onClick={() => void send(s)} className="btn-secondary text-xs">
-                      {s}
-                    </button>
+                    <button key={s} onClick={() => void send(s)} className="btn-secondary text-xs">{s}</button>
                   ))}
                 </div>
               </div>
             )}
 
-            {loadingConversation && selectedId !== null && <Spinner label="Loading conversation…" />}
+            {loadingConversation && selectedId !== null && <Spinner label="Sohbet yükleniyor…" />}
 
             {messages.map((m, index) => (
               <div key={index} className={`flex ${m.role === 'User' ? 'justify-end' : 'justify-start'}`}>
                 <div
-                  className={`max-w-[80%] whitespace-pre-wrap rounded-xl px-4 py-2.5 text-sm ${
+                  className={`max-w-[80%] whitespace-pre-wrap rounded-2xl px-4 py-2.5 text-sm ${
                     m.role === 'User' ? 'bg-brand-600 text-white' : 'border border-slate-200 bg-slate-50 text-slate-800'
                   }`}
                 >
@@ -117,9 +106,7 @@ export function AssistantPage() {
 
             {sendMessage.isPending && (
               <div className="flex justify-start">
-                <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-400">
-                  Thinking…
-                </div>
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-400">Düşünüyor…</div>
               </div>
             )}
           </div>
@@ -127,14 +114,12 @@ export function AssistantPage() {
           <form onSubmit={onSubmit} className="mt-4 flex gap-2 border-t border-slate-100 pt-4">
             <input
               className="input"
-              placeholder="Ask about your spending, budgets, upcoming payments…"
+              placeholder="Harcamalarınız, bütçeleriniz, yaklaşan ödemeleriniz hakkında sorun…"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               disabled={sendMessage.isPending}
             />
-            <button type="submit" className="btn-primary" disabled={sendMessage.isPending || !input.trim()}>
-              Send
-            </button>
+            <button type="submit" className="btn-primary" disabled={sendMessage.isPending || !input.trim()}>Gönder</button>
           </form>
         </section>
       </div>

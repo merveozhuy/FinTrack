@@ -4,6 +4,7 @@ import { useCategories, useCreateCategory, useDeleteCategory } from '../api/cate
 import { Badge, EmptyState, ErrorState, Field, Modal, PageHeader, Spinner } from '../components/ui'
 import { useToast } from '../context/ToastContext'
 import { getApiErrorMessage } from '../lib/api'
+import { typeLabel } from '../lib/labels'
 import type { CategoryType } from '../types'
 
 export function CategoriesPage() {
@@ -20,7 +21,7 @@ export function CategoriesPage() {
     event.preventDefault()
     try {
       await createCategory.mutateAsync({ name, type })
-      notify('success', 'Category created.')
+      notify('success', 'Kategori oluşturuldu.')
       setOpen(false)
       setName('')
     } catch (error) {
@@ -29,10 +30,10 @@ export function CategoriesPage() {
   }
 
   async function remove(id: string) {
-    if (!window.confirm('Archive this category? Existing transactions are kept.')) return
+    if (!window.confirm('Bu kategori arşivlensin mi? Mevcut işlemler korunur.')) return
     try {
       await deleteCategory.mutateAsync(id)
-      notify('success', 'Category archived.')
+      notify('success', 'Kategori arşivlendi.')
     } catch (error) {
       notify('error', getApiErrorMessage(error))
     }
@@ -41,16 +42,16 @@ export function CategoriesPage() {
   return (
     <div>
       <PageHeader
-        title="Categories"
-        subtitle="Organize your income and expenses"
-        action={<button className="btn-primary" onClick={() => setOpen(true)}>New category</button>}
+        title="Kategoriler"
+        subtitle="Gelir ve giderlerinizi düzenleyin"
+        action={<button className="btn-primary" onClick={() => setOpen(true)}>Yeni kategori</button>}
       />
 
-      {isLoading && <Spinner label="Loading categories…" />}
-      {isError && <ErrorState message="Could not load categories." />}
+      {isLoading && <Spinner label="Kategoriler yükleniyor…" />}
+      {isError && <ErrorState message="Kategoriler yüklenemedi." />}
 
       {data && (data.length === 0 ? (
-        <EmptyState title="No categories yet" hint="Create your first category." />
+        <EmptyState title="Henüz kategori yok" hint="İlk kategorinizi oluşturun." />
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {data.map((category) => (
@@ -58,33 +59,31 @@ export function CategoriesPage() {
               <div>
                 <p className="font-medium text-slate-800">{category.name}</p>
                 <div className="mt-1 flex gap-2">
-                  <Badge tone={category.type === 'Income' ? 'emerald' : 'slate'}>{category.type}</Badge>
-                  {category.isDefault && <Badge>Default</Badge>}
+                  <Badge tone={category.type === 'Income' ? 'emerald' : 'slate'}>{typeLabel(category.type)}</Badge>
+                  {category.isDefault && <Badge>Varsayılan</Badge>}
                 </div>
               </div>
-              <button className="text-sm text-rose-600 hover:underline" onClick={() => remove(category.id)}>
-                Archive
-              </button>
+              <button className="text-sm text-rose-600 hover:underline" onClick={() => remove(category.id)}>Arşivle</button>
             </div>
           ))}
         </div>
       ))}
 
       {open && (
-        <Modal title="New category" onClose={() => setOpen(false)}>
+        <Modal title="Yeni kategori" onClose={() => setOpen(false)}>
           <form onSubmit={submit} className="space-y-4">
-            <Field label="Name">
+            <Field label="Ad">
               <input className="input" value={name} onChange={(e) => setName(e.target.value)} required maxLength={64} />
             </Field>
-            <Field label="Type">
+            <Field label="Tür">
               <select className="input" value={type} onChange={(e) => setType(e.target.value as CategoryType)}>
-                <option value="Expense">Expense</option>
-                <option value="Income">Income</option>
+                <option value="Expense">Gider</option>
+                <option value="Income">Gelir</option>
               </select>
             </Field>
             <div className="flex justify-end gap-2">
-              <button type="button" className="btn-secondary" onClick={() => setOpen(false)}>Cancel</button>
-              <button type="submit" className="btn-primary" disabled={createCategory.isPending}>Create</button>
+              <button type="button" className="btn-secondary" onClick={() => setOpen(false)}>İptal</button>
+              <button type="submit" className="btn-primary" disabled={createCategory.isPending}>Oluştur</button>
             </div>
           </form>
         </Modal>
