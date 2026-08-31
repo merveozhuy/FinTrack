@@ -37,11 +37,15 @@ model is used only to **explain, summarize and interpret** that trusted data —
 - **Recurring transactions** — weekly/monthly/yearly rules with pause/resume, materialized into real
   transactions by a background worker. Generation is idempotent (a rule is never executed twice for
   the same date) and catches up on missed occurrences.
+- **React frontend** — TypeScript SPA with login/register, a charted dashboard, and full management
+  screens for transactions (filter/sort/paginate), categories, budgets and recurring payments.
+  Server state via TanStack Query, forms with React Hook Form + Zod, a JWT axios interceptor with
+  controlled logout on 401, and loading/empty/error states throughout.
 - **Reliable error handling** — RFC 7807 ProblemDetails for every error, with a trace id.
 - **Tested** — 46 tests: unit tests plus integration tests that run against a real PostgreSQL (via
   Testcontainers), including cross-user data-isolation proofs.
 
-Planned: reports with CSV export, a React frontend, and the RAG assistant.
+Planned: reports with CSV export and the RAG assistant.
 
 ## 🏗️ Architecture
 
@@ -49,7 +53,7 @@ A simplified Clean Architecture — four layers, each with a concrete purpose, n
 
 ```mermaid
 flowchart LR
-    UI[React Client - planned] -->|HTTPS + JWT| API[FinTrack.Api]
+    UI[React Client] -->|HTTPS + JWT| API[FinTrack.Api]
     API --> APP[FinTrack.Application]
     APP --> DOM[FinTrack.Domain]
     APP --> INFRA[FinTrack.Infrastructure]
@@ -94,7 +98,7 @@ filters by it, so one user's data can never surface for another.
 JWT auth, FluentValidation, Serilog, Swagger / OpenAPI.
 **Testing:** xUnit, FluentAssertions, Moq, Testcontainers.
 **DevOps:** Docker, docker-compose, GitHub Actions.
-**Frontend (planned):** React, TypeScript, Vite, TanStack Query, React Hook Form, Zod,
+**Frontend:** React, TypeScript, Vite, React Router, Axios, TanStack Query, React Hook Form, Zod,
 Recharts, Tailwind CSS.
 
 ## 🔐 Security
@@ -119,7 +123,7 @@ Recharts, Tailwind CSS.
 | 4 | Categories + Transactions (filtering, pagination, tests) | ✅ |
 | 5 | Budgets + Dashboard aggregate endpoint | ✅ |
 | 6 | Recurring transactions + background worker | ✅ |
-| 7 | React frontend | ⏳ |
+| 7 | React frontend | ✅ |
 | 8 | RAG assistant (pgvector, embeddings, LLM) | ⏳ |
 | 9 | Docker + CI | ✅ (base) |
 | 10 | Documentation | ✅ (this README) |
@@ -158,6 +162,19 @@ dotnet run --project src/FinTrack.Api
 ```
 
 - API + Swagger: <http://localhost:5080/swagger>
+
+### Frontend
+
+With the backend running on `:5080`, start the React client (its dev server proxies `/api` to the
+backend, so no CORS setup is needed):
+
+```bash
+cd frontend/fintrack-client
+npm install
+npm run dev
+```
+
+- App: <http://localhost:5173>
 
 ## ⚙️ Environment variables
 
@@ -200,8 +217,11 @@ A ready-to-use request collection is in [`docs/requests.http`](docs/requests.htt
 
 ## 🖼️ Screenshots
 
-_The React frontend is an upcoming phase; screenshots will be added here. For now the API can be
-explored interactively through Swagger UI._
+_Add screenshots of the running app here (Login, Dashboard, Transactions, Budgets). Run the
+frontend as described above, or explore the API through Swagger UI._
+
+<!-- ![Dashboard](docs/screenshots/dashboard.png) -->
+<!-- ![Transactions](docs/screenshots/transactions.png) -->
 
 ## ⚠️ Known limitations
 
