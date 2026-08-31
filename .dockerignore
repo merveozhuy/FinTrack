@@ -1,0 +1,11 @@
+**/bin/
+**/obj/
+**/node_modules/
+**/dist/
+.git/
+.github/
+.vs/
+.idea/
+*.md
+docs/
+frontend/**/dist/

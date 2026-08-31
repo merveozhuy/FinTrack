@@ -7,8 +7,10 @@ using FinTrack.Application;
 using FinTrack.Application.Common.Interfaces;
 using FinTrack.Application.Common.Security;
 using FinTrack.Infrastructure;
+using FinTrack.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -110,6 +112,15 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Apply pending migrations on startup when explicitly enabled (used by docker-compose so
+// `docker compose up` yields a working database without a manual migration step).
+if (app.Configuration.GetValue<bool>("Database:MigrateOnStartup"))
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
+}
 
 // Global error handling must be the outermost middleware.
 app.UseMiddleware<ExceptionHandlingMiddleware>();
