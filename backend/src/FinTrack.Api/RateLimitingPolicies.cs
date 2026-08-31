@@ -4,4 +4,5 @@ namespace FinTrack.Api;
 public static class RateLimitingPolicies
 {
     public const string Auth = "auth";
+    public const string Assistant = "assistant";
 }

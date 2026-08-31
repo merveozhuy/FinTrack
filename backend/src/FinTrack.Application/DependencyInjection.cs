@@ -1,4 +1,7 @@
 using System.Globalization;
+using FinTrack.Application.Features.Assistant;
+using FinTrack.Application.Features.Assistant.Context;
+using FinTrack.Application.Features.Assistant.Documents;
 using FinTrack.Application.Features.Auth;
 using FinTrack.Application.Features.Budgets;
 using FinTrack.Application.Features.Categories;
@@ -29,6 +32,9 @@ public static class DependencyInjection
         services.AddScoped<IDashboardService, DashboardService>();
         services.AddScoped<IRecurringTransactionService, RecurringTransactionService>();
         services.AddScoped<IRecurringTransactionProcessor, RecurringTransactionProcessor>();
+        services.AddScoped<IFinancialDocumentService, FinancialDocumentService>();
+        services.AddScoped<IAssistantContextBuilder, AssistantContextBuilder>();
+        services.AddScoped<IAssistantService, AssistantService>();
 
         return services;
     }

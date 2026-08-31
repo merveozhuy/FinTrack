@@ -67,6 +67,8 @@ builder.Services.AddAuthorization();
 // Limits are configurable so integration tests can raise them (config key "RateLimiting:Auth").
 var authPermitLimit = builder.Configuration.GetValue<int?>("RateLimiting:Auth:PermitLimit") ?? 10;
 var authWindowSeconds = builder.Configuration.GetValue<int?>("RateLimiting:Auth:WindowSeconds") ?? 60;
+var assistantPermitLimit = builder.Configuration.GetValue<int?>("RateLimiting:Assistant:PermitLimit") ?? 20;
+var assistantWindowSeconds = builder.Configuration.GetValue<int?>("RateLimiting:Assistant:WindowSeconds") ?? 60;
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -74,6 +76,12 @@ builder.Services.AddRateLimiter(options =>
     {
         limiter.PermitLimit = authPermitLimit;
         limiter.Window = TimeSpan.FromSeconds(authWindowSeconds);
+        limiter.QueueLimit = 0;
+    });
+    options.AddFixedWindowLimiter(RateLimitingPolicies.Assistant, limiter =>
+    {
+        limiter.PermitLimit = assistantPermitLimit;
+        limiter.Window = TimeSpan.FromSeconds(assistantWindowSeconds);
         limiter.QueueLimit = 0;
     });
 });
