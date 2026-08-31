@@ -41,11 +41,16 @@ model is used only to **explain, summarize and interpret** that trusted data —
   screens for transactions (filter/sort/paginate), categories, budgets and recurring payments.
   Server state via TanStack Query, forms with React Hook Form + Zod, a JWT axios interceptor with
   controlled logout on 401, and loading/empty/error states throughout.
+- **RAG assistant** — ask about your finances in natural language. A rule-based classifier routes the
+  question, exact figures are computed by backend services (never by the LLM), semantic context is
+  retrieved from the user's own embedding documents via pgvector, and the model only explains the
+  result. Provider-agnostic: runs offline with a deterministic fake provider, or OpenAI via config.
+  Every retrieval is filtered by user id — a test proves one user's answer never contains another's data.
 - **Reliable error handling** — RFC 7807 ProblemDetails for every error, with a trace id.
-- **Tested** — 46 tests: unit tests plus integration tests that run against a real PostgreSQL (via
+- **Tested** — 58 tests: unit tests plus integration tests that run against a real PostgreSQL (via
   Testcontainers), including cross-user data-isolation proofs.
 
-Planned: reports with CSV export and the RAG assistant.
+Planned: reports with CSV export.
 
 ## 🏗️ Architecture
 
@@ -58,8 +63,8 @@ flowchart LR
     APP --> DOM[FinTrack.Domain]
     APP --> INFRA[FinTrack.Infrastructure]
     INFRA --> DB[(PostgreSQL + pgvector)]
-    INFRA -.planned.-> LLM[LLM Provider]
-    INFRA -.planned.-> EMB[Embedding Provider]
+    INFRA --> LLM[LLM Provider]
+    INFRA --> EMB[Embedding Provider]
 ```
 
 | Layer | Responsibility |
@@ -74,7 +79,7 @@ Application abstractions. There is intentionally **no repository layer** — EF 
 provides the Unit of Work and Repository patterns, so wrapping it again would add complexity
 without value.
 
-## 🤖 RAG approach (planned)
+## 🤖 RAG approach
 
 The assistant separates two access paths and always keeps numeric accuracy in the backend:
 
@@ -124,7 +129,7 @@ Recharts, Tailwind CSS.
 | 5 | Budgets + Dashboard aggregate endpoint | ✅ |
 | 6 | Recurring transactions + background worker | ✅ |
 | 7 | React frontend | ✅ |
-| 8 | RAG assistant (pgvector, embeddings, LLM) | ⏳ |
+| 8 | RAG assistant (pgvector, embeddings, LLM) | ✅ |
 | 9 | Docker + CI | ✅ (base) |
 | 10 | Documentation | ✅ (this README) |
 
@@ -187,6 +192,8 @@ See [`.env.example`](.env.example). Key values:
 | `Jwt__Issuer` / `Jwt__Audience` | JWT issuer / audience |
 | `Database__MigrateOnStartup` | When `true`, applies migrations on startup (used by compose) |
 | `RateLimiting__Auth__PermitLimit` | Requests allowed per window on auth endpoints |
+| `Ai__Provider` | `Fake` (default, no key needed) or `OpenAI` |
+| `OpenAI__ApiKey` | OpenAI key — only when `Ai__Provider=OpenAI`; never commit it |
 
 ## 🧪 Tests
 
@@ -210,8 +217,9 @@ dotnet test
 | Budgets | `GET /api/budgets/{year}/{month}` · `POST /api/budgets` · `PUT/DELETE /api/budgets/{id}` |
 | Dashboard | `GET /api/dashboard?year=&month=` |
 | Recurring | `GET/POST /api/recurring-transactions` · `PUT/DELETE /api/recurring-transactions/{id}` · `PATCH /api/recurring-transactions/{id}/status` |
+| Assistant | `POST /api/assistant/chat` · `GET /api/assistant/conversations` · `GET/DELETE /api/assistant/conversations/{id}` |
 | Health | `GET /api/health` |
-| _Planned_ | reports, assistant |
+| _Planned_ | reports (CSV export) |
 
 A ready-to-use request collection is in [`docs/requests.http`](docs/requests.http).
 
