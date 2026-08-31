@@ -34,12 +34,14 @@ model is used only to **explain, summarize and interpret** that trusted data —
 - **Dashboard** — a single aggregate endpoint returning monthly income/expense/net, month-over-month
   change, category breakdown, daily spending trend, recent transactions, budget status and
   upcoming payments.
+- **Recurring transactions** — weekly/monthly/yearly rules with pause/resume, materialized into real
+  transactions by a background worker. Generation is idempotent (a rule is never executed twice for
+  the same date) and catches up on missed occurrences.
 - **Reliable error handling** — RFC 7807 ProblemDetails for every error, with a trace id.
-- **Tested** — 38 tests: unit tests plus integration tests that run against a real PostgreSQL (via
+- **Tested** — 46 tests: unit tests plus integration tests that run against a real PostgreSQL (via
   Testcontainers), including cross-user data-isolation proofs.
 
-Planned: reports with CSV export, recurring transactions with a background worker, a React
-frontend, and the RAG assistant.
+Planned: reports with CSV export, a React frontend, and the RAG assistant.
 
 ## 🏗️ Architecture
 
@@ -116,7 +118,7 @@ Recharts, Tailwind CSS.
 | 3 | Authentication (JWT + refresh, ownership) | ✅ |
 | 4 | Categories + Transactions (filtering, pagination, tests) | ✅ |
 | 5 | Budgets + Dashboard aggregate endpoint | ✅ |
-| 6 | Recurring transactions + background worker | ⏳ |
+| 6 | Recurring transactions + background worker | ✅ |
 | 7 | React frontend | ⏳ |
 | 8 | RAG assistant (pgvector, embeddings, LLM) | ⏳ |
 | 9 | Docker + CI | ✅ (base) |
@@ -190,8 +192,9 @@ dotnet test
 | Transactions | `GET/POST /api/transactions` · `GET/PUT/DELETE /api/transactions/{id}` |
 | Budgets | `GET /api/budgets/{year}/{month}` · `POST /api/budgets` · `PUT/DELETE /api/budgets/{id}` |
 | Dashboard | `GET /api/dashboard?year=&month=` |
+| Recurring | `GET/POST /api/recurring-transactions` · `PUT/DELETE /api/recurring-transactions/{id}` · `PATCH /api/recurring-transactions/{id}/status` |
 | Health | `GET /api/health` |
-| _Planned_ | reports, recurring transactions, assistant |
+| _Planned_ | reports, assistant |
 
 A ready-to-use request collection is in [`docs/requests.http`](docs/requests.http).
 
