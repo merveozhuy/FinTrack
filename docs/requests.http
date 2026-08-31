@@ -1,0 +1,53 @@
+# FinTrack API — quick requests (VS Code REST Client / JetBrains HTTP Client)
+# Docker compose runs the API on :8080. For local `dotnet run` use :5080.
+
+@baseUrl = http://localhost:8080
+@email = demo@fintrack.local
+@password = Sup3rSecret!
+
+### Register a new user
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{ "email": "{{email}}", "password": "{{password}}", "displayName": "Demo User" }
+
+### Login (copy "accessToken" from the response into @token below)
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "{{email}}", "password": "{{password}}" }
+
+@token = PASTE_ACCESS_TOKEN_HERE
+
+### Current user
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{token}}
+
+### List categories (9 defaults are seeded on registration)
+GET {{baseUrl}}/api/categories
+Authorization: Bearer {{token}}
+
+### Create a category
+POST {{baseUrl}}/api/categories
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "name": "Coffee", "type": "Expense" }
+
+### Create a transaction (replace categoryId with a real id from the categories list)
+POST {{baseUrl}}/api/transactions
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "type": "Expense",
+  "amount": 450,
+  "currency": "TRY",
+  "categoryId": "REPLACE_WITH_CATEGORY_ID",
+  "description": "market shopping",
+  "transactionDate": "2026-07-12"
+}
+
+### List transactions (filtered, sorted, paged)
+GET {{baseUrl}}/api/transactions?type=Expense&search=market&sortBy=Date&sortDir=Desc&page=1&pageSize=20
+Authorization: Bearer {{token}}
