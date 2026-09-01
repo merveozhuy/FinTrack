@@ -29,6 +29,16 @@ public class PeriodResolverTests
     }
 
     [Fact]
+    public void Resolve_ComparedToLastMonth_StaysCurrentMonth()
+    {
+        // "geçen aya göre" is a comparison, not a request for last month's period.
+        var period = PeriodResolver.Resolve("Geçen aya göre harcamam nasıl değişti?", Today);
+
+        period.Label.Should().Be("bu ay");
+        period.Start.Should().Be(new DateOnly(2026, 9, 1));
+    }
+
+    [Fact]
     public void Resolve_Last3Months_SpansThreeMonths()
     {
         var period = PeriodResolver.Resolve("Son 3 ayda ne harcadım?", Today);

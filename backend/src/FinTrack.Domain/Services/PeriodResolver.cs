@@ -17,6 +17,13 @@ public static class PeriodResolver
         var currentStart = new DateOnly(today.Year, today.Month, 1);
         var currentEnd = currentStart.AddMonths(1).AddDays(-1);
 
+        // "geçen aya göre" is a comparison against last month, not a request for last month's data,
+        // so the period stays the current month (the comparison is reported separately).
+        if (Contains(q, "geçen aya göre", "gecen aya gore", "önceki aya göre", "onceki aya gore", "geçen aya kıyasla", "compared to last"))
+        {
+            return new ResolvedPeriod(currentStart, currentEnd, "bu ay", 1);
+        }
+
         if (Contains(q, "geçen ay", "önceki ay", "gecen ay", "last month"))
         {
             var start = currentStart.AddMonths(-1);
