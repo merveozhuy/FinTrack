@@ -60,7 +60,47 @@ public class AssistantEndpointsTests
         var chat = await client.PostAsJsonAsync("/api/assistant/chat", new { message = "How much did I spend?" });
         var response = await chat.Content.ReadFromJsonAsync<ChatResponse>(ApiTestExtensions.Json);
 
-        response!.Answer.Should().Contain("enough data");
+        response!.Answer.Should().Contain("yeterli veri");
+    }
+
+    [Fact]
+    public async Task Chat_LastMonthQuestion_UsesLastMonthPeriod()
+    {
+        var client = await _factory.RegisterClientAsync();
+        var foodId = await client.GetCategoryIdAsync("Food");
+
+        var lastMonth = DateTime.UtcNow.AddMonths(-1);
+        var date = new DateOnly(lastMonth.Year, lastMonth.Month, 10).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        await client.PostAsJsonAsync("/api/transactions",
+            new { type = "Expense", amount = 640m, categoryId = foodId, transactionDate = date });
+
+        var chat = await client.PostAsJsonAsync("/api/assistant/chat", new { message = "Geçen ay ne kadar harcadım?" });
+        var response = await chat.Content.ReadFromJsonAsync<ChatResponse>(ApiTestExtensions.Json);
+
+        response!.DataPeriod.Start.Should().Be(new DateOnly(lastMonth.Year, lastMonth.Month, 1));
+        response.Answer.Should().Contain("640");
+    }
+
+    [Fact]
+    public async Task Chat_AboutCardDebt_IncludesDebtInAnswer()
+    {
+        var client = await _factory.RegisterClientAsync();
+        var foodId = await client.GetCategoryIdAsync("Food");
+        var card = await (await client.PostAsJsonAsync("/api/credit-cards", new { name = "Bonus" }))
+            .Content.ReadFromJsonAsync<FinTrack.Application.Features.CreditCards.Dtos.CreditCardDto>(ApiTestExtensions.Json);
+        await client.PostAsJsonAsync("/api/transactions", new
+        {
+            type = "Expense",
+            amount = 500m,
+            categoryId = foodId,
+            creditCardId = card!.Id,
+            transactionDate = ThisMonth(10),
+        });
+
+        var chat = await client.PostAsJsonAsync("/api/assistant/chat", new { message = "Kredi kartı borcum ne kadar?" });
+        var response = await chat.Content.ReadFromJsonAsync<ChatResponse>(ApiTestExtensions.Json);
+
+        response!.Answer.Should().Contain("500");
     }
 
     [Fact]
